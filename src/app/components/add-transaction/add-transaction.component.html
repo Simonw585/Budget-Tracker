@@ -1,0 +1,25 @@
+﻿<!-- File: C:\Users\si.white\budget-tracker\src\app\components\add-transaction\add-transaction.component.html -->
+<!-- Description: HTML for add transaction form and UI elements. -->
+
+<div class="form-container">
+  <h3>Add Transaction</h3>
+
+  <label for="transaction-type">Type</label>
+  <select id="transaction-type" [(ngModel)]="newTransaction.type" aria-label="Transaction type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
+
+  <label for="transaction-category">Category</label>
+  <input id="transaction-category" type="text" [(ngModel)]="newTransaction.category" placeholder="Enter category" aria-label="Category">
+
+  <label for="transaction-amount">Amount</label>
+  <input id="transaction-amount" type="number" [(ngModel)]="newTransaction.amount" placeholder="0.00" aria-label="Amount">
+
+  <label for="transaction-date">Date</label>
+  <input id="transaction-date" type="date" [(ngModel)]="newTransaction.date" aria-label="Date">
+
+  <button (click)="add()">Add</button>
+</div>
+
+

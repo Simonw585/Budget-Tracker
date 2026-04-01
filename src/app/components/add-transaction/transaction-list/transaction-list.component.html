@@ -1,0 +1,26 @@
+﻿<!-- File: C:\Users\si.white\budget-tracker\src\app\components\add-transaction\transaction-list\transaction-list.component.html -->
+<!-- Description: HTML for transaction list view and controls. -->
+
+<!-- File: C:\Users\si.white\budget-tracker\src\app\components\add-transaction\transaction-list\transaction-list.component.html -->
+<!-- Description: This template defines the HTML structure for a view in the Budget Tracker app. -->
+
+<div>
+  <h3>Summary</h3>
+  <p><strong>Total Income:</strong> Â£{{ getTotalIncome() }}</p>
+  <p><strong>Total Expenses:</strong> Â£{{ getTotalExpenses() }}</p>
+  <p><strong>Balance:</strong> Â£{{ getTotalIncome() - getTotalExpenses() }}</p>
+
+  <h3>Transactions</h3>
+  <ul>
+    <li *ngFor="let t of transactions">
+      <span [style.color]="t.type === 'income' ? 'green' : 'red'">
+        {{ t.type }}
+      </span>
+      - {{ t.category }} (Â£{{ t.amount }}) on {{ t.date }}
+
+      <button (click)="delete(t.id)">Delete</button>
+    </li>
+  </ul>
+</div>
+
+
