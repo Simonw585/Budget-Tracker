@@ -12,14 +12,16 @@
 
   <h3>Transactions</h3>
   <ul>
-    <li *ngFor="let t of transactions">
-      <span [style.color]="t.type === 'income' ? 'green' : 'red'">
-        {{ t.type }}
-      </span>
-      - {{ t.category }} (Â£{{ t.amount }}) on {{ t.date }}
+    @for (t of transactions; track t.id) {
+      <li>
+        <span [style.color]="t.type === 'income' ? 'green' : 'red'">
+          {{ t.type }}
+        </span>
+        - {{ t.category }} (Â£{{ t.amount }}) on {{ t.date }}
 
-      <button (click)="delete(t.id)">Delete</button>
-    </li>
+        <button (click)="delete(t.id)">Delete</button>
+      </li>
+    }
   </ul>
 </div>
 

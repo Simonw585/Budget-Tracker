@@ -3,14 +3,13 @@
 */
 
 import { Component } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { AddTransactionComponent } from './components/add-transaction/add-transaction.component';
 import { TransactionListComponent } from './components/add-transaction/transaction-list/transaction-list.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [BrowserModule, AddTransactionComponent, TransactionListComponent],
+  imports: [AddTransactionComponent, TransactionListComponent],
   template: `
     <div class="main-container">
       <h1>Budget Tracker</h1>
