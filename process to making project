@@ -1,0 +1,40 @@
+So I built this budget tracker app using Angular, and I wanted to write down how I did it so I don't forget and maybe help someone else learning Angular too. Let me walk you through the process from start to finish.
+
+
+First off, I started with Angular CLI - that's this command line tool that basically sets up your whole project for you. I just ran "ng new budget-tracker" and boom, it created all the folders and files I needed. It handled installing Angular itself, setting up TypeScript configs, and even got the development server ready. Pretty handy!
+
+
+The main files it created were things like package.json (which lists all the dependencies), angular.json (build configs), and src/main.ts which is where the app actually starts running.
+
+
+Then I set up the basic structure. The app.component.ts is like the main container - it's the root of everything. I made it standalone (that's the new way in Angular) and had it show the title and two main parts: a form to add transactions and a list to show them.
+
+
+I created some data models too - just simple interfaces in TypeScript that define what a transaction looks like. Stuff like id, type (income or expense), category, amount, date. Keeps everything organized.
+
+
+The tricky part was figuring out how to store the data. I didn't want to set up a whole database for a simple app, so I used the browser's localStorage. Created a BudgetService that handles saving and loading transactions. It's pretty straightforward - just JSON.stringify to save and JSON.parse to load.
+
+
+For the UI, I built two main components. First, the add transaction form. It has dropdowns for type, text inputs for category and amount, a date picker, and an add button. When you click add, it creates a transaction object and saves it through the service, then clears the form so you can add more.
+
+
+The transaction list component shows all the transactions with a summary at the top - total income, expenses, and balance. Each transaction shows in the list with a delete button. I made income show in green and expenses in red so it's easy to see at a glance.
+
+
+Putting it all together was pretty simple. The main app component just displays both the form and list components. Angular handles the rest - bootstrapping from main.ts, loading the components, and connecting everything through the service.
+
+
+There are some other folders I set up for future features like a dashboard with charts, category management, settings, etc., but I haven't hooked those up yet. Maybe someday!
+
+
+Technologies I used: Angular 21 (latest version), TypeScript for the code, RxJS for some async stuff (though not much), localStorage for data, and basic SCSS for styling.
+
+
+To run it, you just need Node.js, then npm install to get dependencies, npm start to run the dev server, and open localhost:4200 in your browser.
+
+
+This was a great project to learn Angular with - it's simple enough to understand but covers real CRUD operations (create, read, update, delete). And it's actually useful for tracking money! The structure makes it easy to add more features later too.
+
+
+If I were to expand it, I'd probably add routing so you can navigate between pages, implement that dashboard with some charts, add better category management, validation, and maybe connect it to a real database instead of localStorage.
