@@ -25,6 +25,12 @@ The transaction list component shows all the transactions with a summary at the 
 Putting it all together was pretty simple. The main app component just displays both the form and list components. Angular handles the rest - bootstrapping from main.ts, loading the components, and connecting everything through the service.
 
 
+Then I decided to add some more advanced features. First, I added category filtering so users can filter transactions by category. I added a categories array to extract unique categories from all transactions, and a dropdown to select which category to show. The filteredTransactions getter handles showing only the transactions that match the selected category.
+
+
+Next, I implemented inline editing. Instead of just deleting transactions, users can now edit them directly in the list. I added editing state properties (editingId, editedTransaction) and methods to start, save, and cancel edits. When editing, the transaction row turns into a form with inputs for all the fields. The BudgetService got an updateTransaction method to handle saving the changes.
+
+
 There are some other folders I set up for future features like a dashboard with charts, category management, settings, etc., but I haven't hooked those up yet. Maybe someday!
 
 
@@ -38,3 +44,5 @@ This was a great project to learn Angular with - it's simple enough to understan
 
 
 If I were to expand it, I'd probably add routing so you can navigate between pages, implement that dashboard with some charts, add better category management, validation, and maybe connect it to a real database instead of localStorage.
+
+

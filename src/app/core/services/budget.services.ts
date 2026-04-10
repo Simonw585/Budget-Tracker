@@ -47,7 +47,18 @@ export class BudgetService {
     const updated = this.getTransactions().filter(t => t.id !== id);
     this.saveTransactions(updated);
   }
+
+  /**
+   * Update an existing transaction and save changes.
+   */
+  updateTransaction(updatedTx: Transaction) {
+    const list = this.getTransactions();
+    const index = list.findIndex(t => t.id === updatedTx.id);
+
+    if (index !== -1) {
+      list[index] = updatedTx;
+      this.saveTransactions(list);
+    }
+  }
 }
-
-
 

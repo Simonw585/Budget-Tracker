@@ -1,28 +1,59 @@
-﻿<!-- File: C:\Users\si.white\budget-tracker\src\app\components\add-transaction\transaction-list\transaction-list.component.html -->
-<!-- Description: HTML for transaction list view and controls. -->
-
-<!-- File: C:\Users\si.white\budget-tracker\src\app\components\add-transaction\transaction-list\transaction-list.component.html -->
-<!-- Description: This template defines the HTML structure for a view in the Budget Tracker app. -->
-
-<div>
+﻿<!-- Transaction list with filtering and editing -->
+<div class="card">
   <h3>Summary</h3>
-  <p><strong>Total Income:</strong> Â£{{ getTotalIncome() }}</p>
-  <p><strong>Total Expenses:</strong> Â£{{ getTotalExpenses() }}</p>
-  <p><strong>Balance:</strong> Â£{{ getTotalIncome() - getTotalExpenses() }}</p>
-
-  <h3>Transactions</h3>
-  <ul>
-    @for (t of transactions; track t.id) {
-      <li>
-        <span [style.color]="t.type === 'income' ? 'green' : 'red'">
-          {{ t.type }}
-        </span>
-        - {{ t.category }} (Â£{{ t.amount }}) on {{ t.date }}
-
-        <button (click)="delete(t.id)">Delete</button>
-      </li>
-    }
-  </ul>
+  <p><strong>Total Income:</strong> £{{ getTotalIncome() }}</p>
+  <p><strong>Total Expenses:</strong> £{{ getTotalExpenses() }}</p>
+  <p><strong>Balance:</strong> £{{ getTotalIncome() - getTotalExpenses() }}</p>
 </div>
 
+<div class="card">
+  <h3>Filter by Category</h3>
+  <label for="category-filter">Choose category:</label>
+  <select id="category-filter" [(ngModel)]="selectedCategory">
+    <option value="all">All Categories</option>
+    <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+  </select>
+</div>
 
+<div class="card">
+  <h3>Transactions</h3>
+  <ul>
+    <li *ngFor="let t of filteredTransactions; trackBy: trackById">
+      @if (editingId === t.id) {
+        <!-- edit mode -->
+        <div class="edit-form">
+          <label for="edit-type-{{t.id}}">Type:</label>
+          <select id="edit-type-{{t.id}}" [(ngModel)]="editedTransaction!.type">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+
+          <label for="edit-category-{{t.id}}">Category:</label>
+          <input id="edit-category-{{t.id}}" type="text" [(ngModel)]="editedTransaction!.category" placeholder="Enter category">
+
+          <label for="edit-amount-{{t.id}}">Amount:</label>
+          <input id="edit-amount-{{t.id}}" type="number" [(ngModel)]="editedTransaction!.amount" placeholder="0.00">
+
+          <label for="edit-date-{{t.id}}">Date:</label>
+          <input id="edit-date-{{t.id}}" type="date" [(ngModel)]="editedTransaction!.date">
+
+          <button class="save" (click)="saveEdit()">Save</button>
+          <button class="cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+      } @else {
+        <!-- view mode -->
+        <div class="transaction-view">
+          <span [class.income]="t.type === 'income'"
+                [class.expense]="t.type === 'expense'">
+            {{ t.type.toUpperCase() }}
+          </span>
+          <strong>{{ t.category }}</strong> - £{{ t.amount }} on {{ t.date }}
+          <div class="actions">
+            <button class="edit" (click)="startEdit(t)">Edit</button>
+            <button class="delete" (click)="delete(t.id)">Delete</button>
+          </div>
+        </div>
+      }
+    </li>
+  </ul>
+</div>
