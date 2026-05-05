@@ -22,7 +22,7 @@ For the UI, I built two main components. First, the add transaction form. It has
 The transaction list component shows all the transactions with a summary at the top - total income, expenses, and balance. Each transaction shows in the list with a delete button. I made income show in green and expenses in red so it's easy to see at a glance.
 
 
-Putting it all together was pretty simple. The main app component just displays both the form and list components. Angular handles the rest - bootstrapping from main.ts, loading the components, and connecting everything through the service.
+Putting it all together was intense. The main app component just displays both the form and list components. Angular handles the rest - bootstrapping from main.ts, loading the components, and connecting everything through the service.
 
 
 Then I decided to add some more advanced features. First, I added category filtering so users can filter transactions by category. I added a categories array to extract unique categories from all transactions, and a dropdown to select which category to show. The filteredTransactions getter handles showing only the transactions that match the selected category.
