@@ -5,16 +5,18 @@
 import { Component } from '@angular/core';
 import { AddTransactionComponent } from './components/add-transaction/add-transaction.component';
 import { TransactionListComponent } from './components/add-transaction/transaction-list/transaction-list.component';
+import { IncomeExpensesList } from './features/income-expenses-list/income-expenses-list';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AddTransactionComponent, TransactionListComponent],
+  imports: [AddTransactionComponent, TransactionListComponent, IncomeExpensesList],
   template: `
     <div class="main-container">
       <h1>Budget Tracker</h1>
       <app-add-transaction></app-add-transaction>
       <app-transaction-list></app-transaction-list>
+      <app-income-expenses-list></app-income-expenses-list>
     </div>
   `
 })

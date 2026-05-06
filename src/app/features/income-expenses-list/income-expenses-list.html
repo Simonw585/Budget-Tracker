@@ -1,0 +1,25 @@
+<div class="income-expenses-list">
+  <h2>Income</h2>
+  <ul>
+    @for (transaction of incomeTransactions; track transaction.id) {
+      <li>
+        {{ transaction.category }}: ${{ transaction.amount }} on {{ transaction.date }}
+        @if (transaction.note) {
+          <span> - {{ transaction.note }}</span>
+        }
+      </li>
+    }
+  </ul>
+
+  <h2>Expenses</h2>
+  <ul>
+    @for (transaction of expenseTransactions; track transaction.id) {
+      <li>
+        {{ transaction.category }}: ${{ transaction.amount }} on {{ transaction.date }}
+        @if (transaction.note) {
+          <span> - {{ transaction.note }}</span>
+        }
+      </li>
+    }
+  </ul>
+</div>

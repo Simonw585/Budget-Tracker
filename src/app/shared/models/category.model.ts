@@ -2,4 +2,10 @@
    Description: Data model representing transaction category metadata.
 */
 
+export interface Category {
+  id: string;
+  name: string;
+  type: 'income' | 'expense';
+}
+
 
