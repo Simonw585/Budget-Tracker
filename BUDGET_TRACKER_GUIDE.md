@@ -1,262 +1,195 @@
 # Budget Tracker Guide
 
-A complete professional guide for an Angular 21 budget tracker app built for modern productivity, responsive dashboards, Chart.js visualizations, glassmorphism styling, and a production-ready architecture.
+This guide has been updated to match the current Budget Tracker project and reflects both manual review and AI-assisted refinement.
 
-## 1. Angular 21 Project Overview
+## 1. Current Project Overview
 
-Your project is structured for clarity, modularity, and scalability:
+Budget Tracker is built with Angular 21 using standalone components, router-based navigation, and Chart.js analytics.
 
-- `angular.json` — Angular CLI workspace configuration
-- `package.json` — app dependencies and npm scripts
-- `src/` — application source code
-  - `src/app/` — main application module and feature boundaries
-    - `core/` — shared services, app-level providers, state logic
-      - `services/` — budget data, chart config, auth stubs
-    - `features/` — business features
-      - `dashboard/` — home analytics and charts
-      - `expenses/` — expense management and categories
-      - `income/` — income sources and entry forms
-    - `layout/` — reusable layout components
-      - `sidebar/` — site navigation and menu
-    - `shared/` — UI components, models, pipes, directives
-      - `components/` — cards, widgets, summary blocks
-  - `src/styles/` — global styling utilities and theme files
-  - `src/styles.scss` — root styles and glassmorphism theme
-  - `src/main.ts` — application bootstrap
-  - `src/index.html` — shell HTML and meta tags
+Key project files:
 
-## 2. VS Code Startup Walkthrough
+- `angular.json` — workspace configuration
+- `package.json` — dependencies and scripts
+- `src/main.ts` — bootstrapApplication entrypoint
+- `src/app/app.routes.ts` — route definitions
+- `src/app/core/services/budget.service.ts` — transaction state and analytics data
+- `src/app/core/models/budget.model.ts` — typed transaction model
+- `src/app/features/dashboard/dashboard.ts` — home dashboard view
+- `src/app/features/income/income.ts` — income entry and editing
+- `src/app/features/expenses/expenses.ts` — expense entry and editing
+- `src/app/features/analytics/analytics.ts` — Chart.js analytics page
+- `src/app/layout/navbar/navbar.ts` — top navigation bar
+- `src/app/layout/sidebar/sidebar.ts` — app navigation links
+- `src/styles.scss` — global styles
 
-1. Open VS Code.
-2. Open folder: `File` → `Open Folder...` → `c:\Users\si.white\budget-tracker`
-3. Install recommended extensions (optional but useful):
-   - ESLint
-   - Angular Language Service
-   - Prettier
-   - Live Server / Debugger for Chrome
-4. Open an integrated terminal: `Terminal` → `New Terminal`
-5. Run the app:
+## 2. Current Architecture
+
+Budget Tracker uses a standalone application bootstrap model with `bootstrapApplication` and a route provider.
+
+### Main entry point
+
+`src/main.ts` contains:
+
+- `AppComponent` as a standalone root component
+- `RouterOutlet` for page rendering
+- `NavbarComponent` and `SidebarComponent` for layout
+- `provideRouter(appRoutes)` to wire routing
+
+### Router configuration
+
+`src/app/app.routes.ts` defines:
+
+- `/` → `DashboardComponent`
+- `/income` → `IncomeComponent`
+- `/expenses` → `ExpensesComponent`
+- `/analytics` → `AnalyticsComponent`
+- wildcard route redirect to `/`
+
+## 3. Key Features
+
+### Dashboard
+
+The dashboard component shows:
+
+- total income
+- total expenses
+- current balance
+- top expense categories
+- monthly cash flow summary
+
+It reads data from `BudgetService` using Angular computed signals.
+
+### Income
+
+The income feature supports:
+
+- adding new income transactions
+- inline editing of income records
+- deleting income records
+
+The component uses `FormsModule` and `ngModel` for form binding.
+
+### Expenses
+
+The expenses feature supports:
+
+- adding new expense transactions
+- inline editing of expenses
+- deleting expense records
+
+This view also uses `FormsModule` and `ngModel`.
+
+### Analytics
+
+The analytics page renders:
+
+- a monthly income vs expense line chart
+- an expense category doughnut chart
+- a category breakdown list
+
+The `AnalyticsComponent` uses `ng2-charts` with `BaseChartDirective` and `provideCharts(withDefaultRegisterables())`.
+
+## 4. BudgetService and Data Model
+
+`src/app/core/services/budget.service.ts` is the central state store.
+
+It provides:
+
+- `transactions` signal
+- `incomeTransactions` and `expenseTransactions`
+- `totalIncome`, `totalExpenses`, `balance`
+- `topExpenseCategories`
+- `expenseCategoryBreakdown`
+- `annualIncomeByMonth`, `annualExpenseByMonth`
+- `yearLabels`
+- `monthlyCashFlow`
+- `monthlyCategorySeries`
+
+It also provides methods for:
+
+- `addTransaction()`
+- `updateTransaction()`
+- `removeTransaction()`
+
+The service generates a full year of sample income and expense transactions automatically for charting.
+
+### Transaction model
+
+`src/app/core/models/budget.model.ts` defines:
+
+```ts
+export type TransactionType = 'income' | 'expense';
+
+export interface Transaction {
+  id: string;
+  type: TransactionType;
+  category: string;
+  source: string;
+  amount: number;
+  date: string;
+  notes?: string;
+}
+```
+
+## 5. Current Dependencies
+
+`package.json` includes:
+
+- `@angular/*` 21.2.x
+- `@angular/forms`
+- `@angular/router`
+- `chart.js`
+- `ng2-charts`
+- `rxjs`
+- `zone.js`
+
+## 6. Run and Build Instructions
+
+From the project root:
 
 ```bash
 npm install
 npm start
 ```
 
-6. Visit `http://localhost:4200`.
-7. Use the Explorer to navigate `src/app/` and the `dashboard`, `expenses`, `income` feature modules.
-8. Use `Ctrl+Shift+P` to access Angular commands and search `Angular: Generate Component` or `Angular: Generate Service`.
-
-## 3. Full CGI-style Dashboard Setup
-
-A professional budget tracker dashboard should include:
-
-- Summary cards for total income, total expenses, savings, and budget balance
-- Chart widgets for expense distribution, income breakdown, and cash-flow trends
-- A rich card layout with glassmorphism styling and soft shadows
-- Header controls and quick action buttons
-- Responsive grid layout adapting from desktop to mobile
-
-### Recommended Dashboard Components
-
-- `dashboard-summary-card` — total values, daily/weekly change
-- `dashboard-chart-card` — Chart.js area chart for cash flow
-- `dashboard-pie-card` — expense category breakdown
-- `dashboard-income-table` — recent income entries
-- `dashboard-expense-table` — recent expense entries
-
-### Dashboard Data Model
-
-Use a typed model for dashboard metrics and charts:
-
-- `incomeSources: IncomeSource[]`
-- `expenseCategories: ExpenseCategory[]`
-- `transactions: Transaction[]`
-- `dashboardStats: DashboardStats`
-
-## 4. Chart.js Integration
-
-This project already includes Chart.js and `ng2-charts` in `package.json`.
-
-### Install and configure
+For a production-style build:
 
 ```bash
-npm install
-npm install chart.js ng2-charts
+npm run build -- --configuration development
 ```
 
-### Example `DashboardChartComponent`
+Then open `http://localhost:4200`.
 
-- Import `NgChartsModule` in `AppModule` or `DashboardModule`
-- Define chart data with `ChartConfiguration` and `ChartDataset`
-- Use `baseChart` in the template
+## 7. Styling and Layout
 
-#### Template example
+The current app uses glassmorphism styling and a grid layout in `styles.scss`.
 
-```html
-<div class="chart-card glass-card">
-  <canvas baseChart
-    [data]="chartData"
-    [options]="chartOptions"
-    [type]="chartType">
-  </canvas>
-</div>
-```
+The root layout includes:
 
-#### Component example
+- `app-shell` container
+- `layout-grid` for sidebar + page content
+- `glass-card` panels for feature pages
 
-```ts
-import { Component } from '@angular/core';
-import { ChartConfiguration, ChartType } from 'chart.js';
+Use responsive rules to keep the page usable on smaller screens.
 
-@Component({
-  selector: 'app-dashboard-chart',
-  templateUrl: './dashboard-chart.component.html',
-  styleUrls: ['./dashboard-chart.component.scss']
-})
-export class DashboardChartComponent {
-  public chartType: ChartType = 'line';
-  public chartData: ChartConfiguration<'line'>['data'] = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        data: [4200, 4600, 5200, 5000, 5400, 5800],
-        label: 'Cash Flow',
-        backgroundColor: 'rgba(63, 81, 181, 0.25)',
-        borderColor: '#3f51b5',
-        fill: true,
-      }
-    ]
-  };
-  public chartOptions: ChartConfiguration<'line'>['options'] = {
-    responsive: true,
-    plugins: {
-      legend: { display: true },
-      tooltip: { enabled: true }
-    }
-  };
-}
-```
+## 8. Updating the App
 
-## 5. Responsive Layouts
+If you want to extend Budget Tracker, the cleanest places to add features are:
 
-Design responsive UI using a combination of CSS grid and flexbox.
+- `src/app/core/services/budget.service.ts` for analytics and transaction storage
+- `src/app/features/dashboard/dashboard.ts` for business summaries
+- `src/app/features/income/income.ts` and `src/app/features/expenses/expenses.ts` for entry/edit flows
+- `src/app/features/analytics/analytics.ts` for chart visualizations
+- `src/app/layout/navbar/navbar.ts` and `sidebar/sidebar.ts` for navigation updates
 
-### Core layout rules
+## 9. Notes on AI + Manual Creation
 
-- Desktop: 3-column grid cards
-- Tablet: 2-column grid
-- Mobile: single-column stacked cards
-- Use `minmax(280px, 1fr)` for flexible card columns
+This guide was updated manually to reflect the current source tree and also refined using AI assistance to ensure accuracy and readability.
 
-### Example SCSS layout
+- Manual: verified actual file names and routes
+- AI-assisted: drafted structure, summarized features, and aligned the guide with the current codebase
 
-```scss
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.glass-card {
-  backdrop-filter: blur(18px);
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-@media (max-width: 900px) {
-  .dashboard-grid { gap: 1rem; }
-}
-
-@media (max-width: 600px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-}
-```
-
-## 6. Income Sources (10 Recommended)
-
-A budget tracker becomes more useful when it supports many income streams.
-
-Recommended income sources:
-
-| Income Sources    | Example Amount (GBP) |
-| ----------------- | -------------------- |
-| Salary            | £3,200               |
-| Freelancing       | £850                 |
-| Investments       | £420                 |
-| Rental Income     | £1,100               |
-| Side Hustle       | £360                 |
-| Dividends         | £150                 |
-| Online Sales      | £290                 |
-| Affiliate Revenue | £120                 |
-| Cashback Rewards  | £45                  |
-| Bonuses           | £540                 |
-
-### Income form fields
-
-- Source name
-- Amount (GBP)
-- Category / type
-- Date received
-- Notes
-
-## 7. Expense Categories (20 Recommended)
-
-Track spending across broad categories for better budget control.
-
-Recommended expense categories:
-
-| Expense Categories | Example Amount (GBP) |
-| ------------------ | -------------------- |
-| Rent               | £1,200               |
-| Mortgage           | £1,050               |
-| Utilities          | £180                 |
-| Internet           | £45                  |
-| Mobile Phone       | £38                  |
-| Insurance          | £120                 |
-| Fuel               | £75                  |
-| Car Payments       | £290                 |
-| Public Transport   | £55                  |
-| Groceries          | £320                 |
-| Dining Out         | £140                 |
-| Entertainment      | £85                  |
-| Subscriptions      | £60                  |
-| Medical            | £70                  |
-| Gym                | £35                  |
-| Shopping           | £150                 |
-| Education          | £90                  |
-| Childcare          | £250                 |
-| Savings            | £300                 |
-| Emergency Fund     | £100                 |
-
-### Expense entry fields
-
-- Category
-- Amount (GBP)
-- Merchant / payee
-- Date
-- Notes
-
-## 8. Production-ready Architecture
-
-Build for production with scalable, maintainable patterns.
-
-### Core principles
-
-- Feature modules for `dashboard`, `income`, and `expenses`
-- `core` module for services and singleton providers
-- `shared` module for reusable UI elements
-- On-push change detection for performance-critical views
-- Lazy loading for feature routes
-- Environment configuration for dev and prod builds
-
-### Suggested architecture
-
-- `app/core/services/budget.service.ts` — hold transaction logic and data helpers
-- `app/features/dashboard/dashboard.module.ts` — encapsulate dashboard feature
-- `app/features/expenses/expenses.module.ts` — expense flows and category management
-- `app/features/income/income.module.ts` — income dashboard and add/edit flows
-- `app/shared/components/` — cards, buttons, chart wrappers, form controls
+Use this guide as a reference when exploring, extending, or maintaining the Budget Tracker project.
 
 ### Production build command
 

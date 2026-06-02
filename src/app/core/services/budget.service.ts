@@ -1,84 +1,13 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { ExpenseCategorySummary, MonthlyCashFlowItem, Transaction } from '../models/budget.model';
+import { ExpenseCategorySummary, MonthlyCashFlowItem, Transaction, TransactionType } from '../models/budget.model';
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 @Injectable({
   providedIn: 'root'
 })
 export class BudgetService {
-  private transactionsSignal = signal<Transaction[]>([
-    {
-      id: 'income-1',
-      type: 'income',
-      category: 'Salary',
-      source: 'Primary job',
-      amount: 3200,
-      date: '2026-06-01',
-      notes: 'June pay'
-    },
-    {
-      id: 'income-2',
-      type: 'income',
-      category: 'Freelancing',
-      source: 'Consulting',
-      amount: 850,
-      date: '2026-06-08',
-      notes: 'Client work'
-    },
-    {
-      id: 'income-3',
-      type: 'income',
-      category: 'Dividends',
-      source: 'Investments',
-      amount: 150,
-      date: '2026-06-12',
-      notes: 'Dividend payment'
-    },
-    {
-      id: 'expense-1',
-      type: 'expense',
-      category: 'Rent',
-      source: 'Apartment',
-      amount: 1200,
-      date: '2026-06-03',
-      notes: 'Monthly rent'
-    },
-    {
-      id: 'expense-2',
-      type: 'expense',
-      category: 'Groceries',
-      source: 'Supermarket',
-      amount: 320,
-      date: '2026-06-05',
-      notes: 'Weekly shop'
-    },
-    {
-      id: 'expense-3',
-      type: 'expense',
-      category: 'Utilities',
-      source: 'Gas & electric',
-      amount: 180,
-      date: '2026-06-09',
-      notes: 'Monthly utilities'
-    },
-    {
-      id: 'expense-4',
-      type: 'expense',
-      category: 'Internet',
-      source: 'ISP',
-      amount: 45,
-      date: '2026-06-10',
-      notes: 'Monthly internet'
-    },
-    {
-      id: 'expense-5',
-      type: 'expense',
-      category: 'Mobile Phone',
-      source: 'Carrier',
-      amount: 38,
-      date: '2026-06-14',
-      notes: 'Phone plan'
-    }
-  ]);
+  private transactionsSignal = signal<Transaction[]>(this.generateYearTransactions(2026));
 
   public transactions = computed(() => this.transactionsSignal());
 
@@ -100,35 +29,48 @@ export class BudgetService {
 
   public balance = computed(() => this.totalIncome() - this.totalExpenses());
 
-  public topExpenseCategories = computed(() => {
-    const totals = new Map<string, number>();
+  public topExpenseCategories = computed<ExpenseCategorySummary[]>(() =>
+    this.aggregateByCategory(this.expenseTransactions()).slice(0, 5)
+  );
 
-    this.expenseTransactions().forEach((expense) => {
-      totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount);
-    });
+  public expenseCategoryBreakdown = computed<ExpenseCategorySummary[]>(() =>
+    this.aggregateByCategory(this.expenseTransactions())
+  );
 
-    return Array.from(totals.entries())
-      .map(([category, amount]) => ({ category, amount }))
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 5);
-  });
+  public incomeCategoryBreakdown = computed<ExpenseCategorySummary[]>(() =>
+    this.aggregateByCategory(this.incomeTransactions())
+  );
 
   public monthlyCashFlow = computed<MonthlyCashFlowItem[]>(() => {
-    const buckets = new Map<string, number>();
+    const amounts = this.aggregateByMonth(this.transactions());
+    return MONTH_NAMES.map((month, index) => ({ month, amount: amounts[index] }));
+  });
+
+  public annualIncomeByMonth = computed(() => this.aggregateByMonth(this.incomeTransactions()));
+  public annualExpenseByMonth = computed(() => this.aggregateByMonth(this.expenseTransactions()));
+  public yearLabels = computed(() => MONTH_NAMES);
+
+  public monthlyCategorySeries = computed(() => {
+    const categorySeries = new Map<string, number[]>();
 
     this.transactions().forEach((transaction) => {
-      const month = new Date(transaction.date).toLocaleString('en-GB', {
-        month: 'short'
-      });
-      const amount = transaction.type === 'income' ? transaction.amount : -transaction.amount;
-      buckets.set(month, (buckets.get(month) ?? 0) + amount);
+      const monthIndex = new Date(transaction.date).getMonth();
+      const series = categorySeries.get(transaction.category) ?? Array(12).fill(0);
+      series[monthIndex] += transaction.amount;
+      categorySeries.set(transaction.category, series);
     });
 
-    return Array.from(buckets.entries()).map(([month, amount]) => ({ month, amount }));
+    return Array.from(categorySeries.entries()).map(([category, data]) => ({ category, data }));
   });
 
   addTransaction(transaction: Transaction) {
     this.transactionsSignal.update((current: Transaction[]) => [...current, transaction]);
+  }
+
+  updateTransaction(transaction: Transaction) {
+    this.transactionsSignal.update((current: Transaction[]) =>
+      current.map((existing) => (existing.id === transaction.id ? transaction : existing))
+    );
   }
 
   removeTransaction(transactionId: string) {
@@ -136,5 +78,75 @@ export class BudgetService {
       current.filter((transaction: Transaction) => transaction.id !== transactionId)
     );
   }
+
+  private aggregateByCategory(transactions: Transaction[]): ExpenseCategorySummary[] {
+    const totals = new Map<string, number>();
+
+    transactions.forEach((transaction) => {
+      totals.set(transaction.category, (totals.get(transaction.category) ?? 0) + transaction.amount);
+    });
+
+    return Array.from(totals.entries())
+      .map(([category, amount]) => ({ category, amount }))
+      .sort((a, b) => b.amount - a.amount);
+  }
+
+  private aggregateByMonth(transactions: Transaction[]): number[] {
+    const buckets = Array(12).fill(0);
+
+    transactions.forEach((transaction) => {
+      const monthIndex = new Date(transaction.date).getMonth();
+      buckets[monthIndex] += transaction.amount;
+    });
+
+    return buckets;
+  }
+
+  private generateYearTransactions(year: number): Transaction[] {
+    const transactions: Transaction[] = [];
+    let nextId = 1;
+
+    const add = (
+      type: TransactionType,
+      category: string,
+      source: string,
+      amount: number,
+      date: string,
+      notes = ''
+    ) => {
+      transactions.push({
+        id: `${type}-${nextId++}`,
+        type,
+        category,
+        source,
+        amount,
+        date,
+        notes
+      });
+    };
+
+    for (let month = 0; month < 12; month += 1) {
+      const monthNumber = String(month + 1).padStart(2, '0');
+      add('income', 'Salary', 'Primary job', 3200, `${year}-${monthNumber}-01`, 'Monthly salary');
+      add('expense', 'Rent', 'Apartment', 1200, `${year}-${monthNumber}-03`, 'Monthly rent');
+      add('expense', 'Utilities', 'Gas & electric', 180, `${year}-${monthNumber}-09`, 'Monthly utilities');
+      add('expense', 'Internet', 'ISP', 45, `${year}-${monthNumber}-10`, 'Monthly broadband');
+      add('expense', 'Mobile Phone', 'Carrier', 38, `${year}-${monthNumber}-14`, 'Monthly mobile plan');
+      add('expense', 'Groceries', 'Supermarket', 320 + month * 3, `${year}-${monthNumber}-05`, 'Food shopping');
+      add('expense', 'Subscriptions', 'Streaming', 25, `${year}-${monthNumber}-18`, 'Streaming and apps');
+      add('expense', 'Transport', 'Public transport', 90, `${year}-${monthNumber}-20`, 'Monthly travel');
+
+      if (month % 3 === 0) {
+        add('income', 'Freelancing', 'Consulting', 850 + month * 10, `${year}-${monthNumber}-08`, 'Contract work');
+      }
+
+      if (month % 2 === 1) {
+        add('income', 'Dividends', 'Investments', 150, `${year}-${monthNumber}-15`, 'Investment payout');
+      }
+    }
+
+    return transactions;
+  }
 }
+
 

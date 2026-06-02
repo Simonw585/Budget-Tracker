@@ -1,6 +1,31 @@
 <section class="feature-page glass-card">
   <h2>Income</h2>
   <p>Track salary, freelance, investments and all GBP income sources.</p>
+
+  <form class="transaction-form" (ngSubmit)="addIncome()">
+    <div>
+      <label>Source</label>
+      <input [(ngModel)]="newTransaction.source" name="incomeSource" required />
+    </div>
+    <div>
+      <label>Category</label>
+      <input [(ngModel)]="newTransaction.category" name="incomeCategory" required />
+    </div>
+    <div>
+      <label>Date</label>
+      <input type="date" [(ngModel)]="newTransaction.date" name="incomeDate" required />
+    </div>
+    <div>
+      <label>Amount</label>
+      <input type="number" [(ngModel)]="newTransaction.amount" name="incomeAmount" required />
+    </div>
+    <div>
+      <label>Notes</label>
+      <input [(ngModel)]="newTransaction.notes" name="incomeNotes" />
+    </div>
+    <button type="submit">Add Income</button>
+  </form>
+
   <table>
     <thead>
       <tr>
@@ -8,14 +33,33 @@
         <th>Category</th>
         <th>Date</th>
         <th>Amount</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let transaction of incomeTransactions()">
-        <td>{{ transaction.source }}</td>
-        <td>{{ transaction.category }}</td>
-        <td>{{ transaction.date }}</td>
-        <td>{{ transaction.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</td>
+        <td *ngIf="editingId !== transaction.id">{{ transaction.source }}</td>
+        <td *ngIf="editingId === transaction.id">
+          <input [(ngModel)]="editModel.source" name="editSource" />
+        </td>
+        <td *ngIf="editingId !== transaction.id">{{ transaction.category }}</td>
+        <td *ngIf="editingId === transaction.id">
+          <input [(ngModel)]="editModel.category" name="editCategory" />
+        </td>
+        <td *ngIf="editingId !== transaction.id">{{ transaction.date }}</td>
+        <td *ngIf="editingId === transaction.id">
+          <input type="date" [(ngModel)]="editModel.date" name="editDate" />
+        </td>
+        <td *ngIf="editingId !== transaction.id">{{ transaction.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</td>
+        <td *ngIf="editingId === transaction.id">
+          <input type="number" [(ngModel)]="editModel.amount" name="editAmount" />
+        </td>
+        <td>
+          <button *ngIf="editingId !== transaction.id" type="button" (click)="startEdit(transaction)">Edit</button>
+          <button *ngIf="editingId === transaction.id" type="button" (click)="saveEdit()">Save</button>
+          <button *ngIf="editingId === transaction.id" type="button" (click)="cancelEdit()">Cancel</button>
+          <button type="button" (click)="deleteTransaction(transaction.id)">Delete</button>
+        </td>
       </tr>
     </tbody>
   </table>

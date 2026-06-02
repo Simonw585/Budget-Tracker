@@ -1,4 +1,37 @@
 <section class="feature-page glass-card">
   <h2>Analytics</h2>
   <p>Review charts, trends, and category breakdowns for every GBP transaction.</p>
+
+  <div class="chart-grid">
+    <article class="glass-card chart-card">
+      <h4>Income vs Expenses</h4>
+      <div class="chart-wrapper">
+        <canvas baseChart
+          [data]="lineChartData()"
+          [options]="lineChartOptions"
+          [type]="'line'">
+        </canvas>
+      </div>
+    </article>
+
+    <article class="glass-card chart-card">
+      <h4>Expense Category Breakdown</h4>
+      <div class="chart-wrapper">
+        <canvas baseChart
+          [data]="doughnutChartData()"
+          [options]="doughnutChartOptions"
+          [type]="'doughnut'">
+        </canvas>
+      </div>
+    </article>
+  </div>
+
+  <section class="glass-card">
+    <h4>Expense categories</h4>
+    <ul>
+      <li *ngFor="let category of expenseCategories()">
+        {{ category.category }} — {{ category.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}
+      </li>
+    </ul>
+  </section>
 </section>
