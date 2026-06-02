@@ -1,0 +1,35 @@
+<section class="dashboard-page">
+  <div class="dashboard-grid">
+    <article class="glass-card">
+      <h3>Total Income</h3>
+      <p>{{ totalIncome() | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</p>
+    </article>
+    <article class="glass-card">
+      <h3>Total Expenses</h3>
+      <p>{{ totalExpenses() | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</p>
+    </article>
+    <article class="glass-card">
+      <h3>Balance</h3>
+      <p>{{ balance() | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</p>
+    </article>
+  </div>
+
+  <div class="dashboard-grid">
+    <article class="glass-card">
+      <h4>Monthly Cash Flow</h4>
+      <ul>
+        <li *ngFor="let item of monthlyCashFlow()">
+          {{ item.month }}: {{ item.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}
+        </li>
+      </ul>
+    </article>
+    <article class="glass-card">
+      <h4>Top Expense Categories</h4>
+      <ul>
+        <li *ngFor="let category of topExpenseCategories()">
+          {{ category.category }}: {{ category.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}
+        </li>
+      </ul>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,22 @@
+<section class="feature-page glass-card">
+  <h2>Expenses</h2>
+  <p>Log costs for rent, utilities, groceries, transport, subscriptions, and savings.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Merchant</th>
+        <th>Date</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of expenseTransactions()">
+        <td>{{ transaction.category }}</td>
+        <td>{{ transaction.source }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

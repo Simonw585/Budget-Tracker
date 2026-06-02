@@ -1,0 +1,22 @@
+<section class="feature-page glass-card">
+  <h2>Income</h2>
+  <p>Track salary, freelance, investments and all GBP income sources.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of incomeTransactions()">
+        <td>{{ transaction.source }}</td>
+        <td>{{ transaction.category }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
