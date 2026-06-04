@@ -5,23 +5,23 @@
   <form class="transaction-form" (ngSubmit)="addExpense()">
     <div>
       <label>Merchant</label>
-      <input [(ngModel)]="newTransaction.source" name="expenseSource" required />
+      <input [(ngModel)]="newTransaction.source" name="expenseSource" placeholder="Merchant" required />
     </div>
     <div>
       <label>Category</label>
-      <input [(ngModel)]="newTransaction.category" name="expenseCategory" required />
+      <input [(ngModel)]="newTransaction.category" name="expenseCategory" placeholder="Category" required />
     </div>
     <div>
       <label>Date</label>
-      <input type="date" [(ngModel)]="newTransaction.date" name="expenseDate" required />
+      <input type="date" [(ngModel)]="newTransaction.date" name="expenseDate" placeholder="Date" required />
     </div>
     <div>
       <label>Amount</label>
-      <input type="number" [(ngModel)]="newTransaction.amount" name="expenseAmount" required />
+      <input type="number" [(ngModel)]="newTransaction.amount" name="expenseAmount" placeholder="Amount" required />
     </div>
     <div>
       <label>Notes</label>
-      <input [(ngModel)]="newTransaction.notes" name="expenseNotes" />
+      <input [(ngModel)]="newTransaction.notes" name="expenseNotes" placeholder="Notes" />
     </div>
     <button type="submit">Add Expense</button>
   </form>
@@ -40,19 +40,19 @@
       <tr *ngFor="let transaction of expenseTransactions()">
         <td *ngIf="editingId !== transaction.id">{{ transaction.category }}</td>
         <td *ngIf="editingId === transaction.id">
-          <input [(ngModel)]="editModel.category" name="editCategory" />
+          <input [(ngModel)]="editModel.category" name="editCategory" placeholder="Category" />
         </td>
         <td *ngIf="editingId !== transaction.id">{{ transaction.source }}</td>
         <td *ngIf="editingId === transaction.id">
-          <input [(ngModel)]="editModel.source" name="editSource" />
+          <input [(ngModel)]="editModel.source" name="editSource" placeholder="Merchant" />
         </td>
         <td *ngIf="editingId !== transaction.id">{{ transaction.date }}</td>
         <td *ngIf="editingId === transaction.id">
-          <input type="date" [(ngModel)]="editModel.date" name="editDate" />
+          <input type="date" [(ngModel)]="editModel.date" name="editDate" placeholder="Date" />
         </td>
         <td *ngIf="editingId !== transaction.id">{{ transaction.amount | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</td>
         <td *ngIf="editingId === transaction.id">
-          <input type="number" [(ngModel)]="editModel.amount" name="editAmount" />
+          <input type="number" [(ngModel)]="editModel.amount" name="editAmount" placeholder="Amount" />
         </td>
         <td>
           <button *ngIf="editingId !== transaction.id" type="button" (click)="startEdit(transaction)">Edit</button>
