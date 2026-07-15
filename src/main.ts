@@ -1,6 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { Component } from '@angular/core';
+import { Component, importProvidersFrom } from '@angular/core';
 import { RouterOutlet, provideRouter } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './app/layout/navbar/navbar';
 import { SidebarComponent } from './app/layout/sidebar/sidebar';
 import { appRoutes } from './app/app.routes';
@@ -25,5 +26,5 @@ import { appRoutes } from './app/app.routes';
 export class AppComponent {}
 
 bootstrapApplication(AppComponent, {
-  providers: [provideRouter(appRoutes)]
+  providers: [provideRouter(appRoutes), importProvidersFrom(HttpClientModule)]
 });

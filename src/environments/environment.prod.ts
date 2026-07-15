@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  appName: 'Budget Tracker'
+  appName: 'Budget Tracker',
+  apiUrl: '/api'
 };
