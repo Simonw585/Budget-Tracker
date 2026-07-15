@@ -1,223 +1,77 @@
-# 🚀 Deployment Guide - Budget Tracker
+# Deployment notes
 
-Complete guide for deploying Budget Tracker to production.
+This project is simple enough to deploy in a few steps, but the backend still needs a working MySQL connection and a production-safe environment file.
 
-## 📋 Pre-Deployment Checklist
+## Before deploying
 
-- [ ] All tests passing
-- [ ] No console errors
-- [ ] Database backup created
-- [ ] .env configured for production
-- [ ] SSL certificate (if using HTTPS)
-- [ ] Domain name registered
-- [ ] Server/hosting account created
+Make sure you have:
 
-## 🌐 Deployment Options
+- a server or host that can run Node.js
+- access to a MySQL database
+- a production-ready environment file for the backend
 
-### Option 1: Traditional Hosting (Recommended for Beginners)
+## 1. Build the frontend
 
-#### Prerequisites
-- Hosting with Node.js support
-- MySQL database access
-- SSH access to server
-
-#### Step 1: Build Application
+From the project root:
 
 ```bash
-# Local machine
 npm run build
-
-# This creates dist/budget-tracker-pro/ folder
-# All compiled Angular files will be there
 ```
 
-#### Step 2: Prepare Backend
+That creates the Angular output in the dist folder.
+
+## 2. Prepare the backend environment
+
+In the backend folder, create or update the environment file with production values:
+
+```dotenv
+NODE_ENV=production
+PORT=4000
+DB_HOST=your-db-host
+DB_PORT=3306
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+DB_NAME=budget_db
+CORS_ORIGIN=https://your-domain.example
+```
+
+## 3. Load the database schema
+
+Run the schema file against the production MySQL database:
+
+```bash
+mysql -u your-db-user -p < backend/sql/schema.sql
+```
+
+## 4. Upload the app
+
+You will need to copy over the backend folder, the built frontend files, and the dependency files needed to run the Node server.
+
+## 5. Start the backend
+
+On the server:
 
 ```bash
 cd backend
-
-# Create production .env
-cat > .env << EOF
-NODE_ENV=production
-PORT=4000
-DB_HOST=your-db-host.com
-DB_PORT=3306
-DB_USER=db_username
-DB_PASSWORD=secure_password
-DB_NAME=budget_db_prod
-CORS_ORIGIN=https://yourdomain.com
-EOF
-```
-
-#### Step 3: Upload Files
-
-```bash
-# Using FTP or SFTP, upload:
-# - backend/
-# - dist/budget-tracker-pro/
-# - package.json (from dist)
-```
-
-#### Step 4: Remote Server Setup
-
-```bash
-# SSH into server
-ssh user@yourserver.com
-
-# Install dependencies
-cd budget-tracker
 npm install --production
-
-# Create database
-mysql -u admin -p < backend/sql/schema.sql
-
-# Start application
-npm start
-
-# Or use PM2 for automatic restart
-npm install -g pm2
-pm2 start backend/server.js --name "budget-tracker"
-pm2 startup
-pm2 save
+NODE_ENV=production npm start
 ```
 
-### Option 2: Heroku Deployment
+If you want the process to stay up after a reboot, a process manager such as PM2 is worth using.
 
-#### Prerequisites
-- Heroku account (free tier available)
-- Heroku CLI installed
-- Git repository
+## 6. Serve the frontend
 
-#### Step 1: Create Heroku App
+The Angular build is static, so it can be served by any standard web server or by the backend in production if you choose to wire that up.
 
-```bash
-# Install Heroku CLI
-# https://devcenter.heroku.com/articles/heroku-cli
+## Good deployment checklist
 
-# Login to Heroku
-heroku login
+- MySQL is reachable from the server
+- The backend can connect to the database
+- The production environment values are correct
+- The app can still reach the API over the expected host and port
 
-# Create app
-heroku create budget-tracker-app
+This is enough for a small deployment, and it keeps the setup straightforward.
 
-# Create MySQL add-on
-heroku addons:create cleardb:ignite
-
-# Check connection string
-heroku config | grep CLEARDB_DATABASE_URL
-```
-
-#### Step 2: Configure Environment
-
-```bash
-# Set environment variables
-heroku config:set NODE_ENV=production
-heroku config:set CORS_ORIGIN=https://budget-tracker-app.herokuapp.com
-
-# Build frontend
-npm run build
-```
-
-#### Step 3: Create Procfile
-
-```bash
-# Create file: Procfile (no extension)
-echo "web: cd backend && npm start" > Procfile
-```
-
-#### Step 4: Deploy
-
-```bash
-# Initialize git (if needed)
-git init
-git add .
-git commit -m "Initial deployment"
-
-# Add Heroku remote
-heroku git:remote -a budget-tracker-app
-
-# Deploy
-git push heroku main
-```
-
-#### Step 5: Setup Database
-
-```bash
-# Run migration on Heroku
-heroku run "mysql -u admin -p < backend/sql/schema.sql"
-
-# Check logs
-heroku logs --tail
-```
-
-### Option 3: Docker Deployment
-
-#### Step 1: Create Dockerfile
-
-```dockerfile
-# backend/Dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy backend files
-COPY backend/package*.json ./
-RUN npm ci --only=production
-
-COPY backend/ .
-
-# Copy built frontend
-COPY dist/budget-tracker-pro ../dist/budget-tracker-pro
-
-EXPOSE 4000
-CMD ["npm", "start"]
-```
-
-#### Step 2: Create docker-compose.yml
-
-```yaml
-version: '3.8'
-
-services:
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-
-  api:
-    build: .
-    environment:
-      DB_HOST: mysql
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      NODE_ENV: production
-    ports:
-      - "4000:4000"
-    depends_on:
-      - mysql
-
-volumes:
-  mysql_data:
-```
-
-#### Step 3: Build and Run
-
-```bash
-# Build Docker image
-docker build -t budget-tracker .
-
-# Run with docker-compose
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f api
 ```
 
 ### Option 4: AWS Deployment
@@ -624,3 +478,4 @@ SHOW VARIABLES LIKE 'slow_query_log_file';
 **Your Budget Tracker is now production-ready! 🎉**
 
 **Monitor regularly and keep your application updated for security and performance.**
+

@@ -1,223 +1,92 @@
-# 📖 Installation Guide - Budget Tracker
+# Installation notes
 
-Complete step-by-step guide to install and run the Budget Tracker application.
+These are the steps I use when setting this project up on a local machine.
 
-## 📋 Requirements
+## What you need
 
-Before starting, ensure you have installed:
+- Node.js and npm
+- A running MySQL server
+- A terminal and a browser
 
-1. **Node.js & npm**
-   - Download from: https://nodejs.org
-   - Minimum version: Node 14, npm 6
-   - Verify: `node --version` and `npm --version`
-
-2. **MySQL Database**
-   - Download from: https://dev.mysql.com/downloads/mysql/
-   - Or MariaDB: https://mariadb.org/download/
-   - Minimum version: MySQL 5.7 or MariaDB 10.3
-   - Verify: `mysql --version`
-
-3. **Text Editor / IDE**
-   - VS Code (Recommended): https://code.visualstudio.com
-   - WebStorm, Sublime, or any editor supporting TypeScript
-
-## 🚀 Installation Steps
-
-### Step 1: Download/Clone the Project
+## 1. Clone or open the project
 
 ```bash
-# If you have git
-git clone https://github.com/yourusername/budget-tracker.git
-cd budget-tracker
-
-# Or extract the ZIP file
 cd budget-tracker
 ```
 
-### Step 2: Verify Prerequisites
+## 2. Install dependencies
+
+Install the frontend packages from the project root:
 
 ```bash
-# Check Node.js version (should be 14+)
-node --version
-
-# Check npm version (should be 6+)
-npm --version
-
-# Check MySQL version (should be 5.7+)
-mysql --version
+npm install
 ```
 
-### Step 3: Setup MySQL Database
-
-#### Option A: Using Command Line (Recommended)
+Install the backend packages in the backend folder:
 
 ```bash
-# Start MySQL CLI
-mysql -u root -p
-
-# Enter your MySQL password when prompted
-# Then run the schema script to exit MySQL
-exit
-
-# Run the schema file
-mysql -u root -p budget_db < backend/sql/schema.sql
-```
-
-#### Option B: Using MySQL Workbench
-
-1. Open MySQL Workbench
-2. Connect to your MySQL server
-3. File → Open SQL Script
-4. Navigate to `backend/sql/schema.sql`
-5. Click Execute (or Ctrl+Enter)
-6. Verify database and tables created
-
-#### Option C: Using PhpMyAdmin (if available)
-
-1. Go to `http://localhost/phpmyadmin`
-2. Create new database: `budget_db`
-3. Import file: `backend/sql/schema.sql`
-4. Click Import
-
-### Step 4: Configure Backend Environment
-
-```bash
-# Navigate to backend folder
 cd backend
-
-# Copy environment template
-cp .env.example .env
-
-# Edit .env file with your settings
-# Recommendation: Use VS Code to edit
+npm install
 ```
 
-**Edit `backend/.env` file:**
+## 3. Create the database
+
+Run the SQL schema once against your local MySQL server:
+
+```bash
+mysql -u root -p < backend/sql/schema.sql
+```
+
+If you prefer, you can also open the file in MySQL Workbench and run it there.
+
+## 4. Configure the backend environment
+
+Create a local environment file in the backend folder:
+
+```bash
+cp .env.example .env
+```
+
+Then update the values to match your machine:
 
 ```dotenv
-# Server Configuration
-NODE_ENV=development
-PORT=4000
-
-# MySQL Configuration
 DB_HOST=127.0.0.1
-DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=         # Leave empty if no password, or add your password
+DB_PASSWORD=your_password
 DB_NAME=budget_db
-
-# CORS Configuration
-CORS_ORIGIN=*        # Allow all origins in development
+DB_PORT=3306
+PORT=4000
 ```
 
-**Save the file.**
-
-### Step 5: Install Backend Dependencies
+## 5. Start the backend
 
 ```bash
-# Verify you're in the backend folder
 cd backend
-
-# Install npm packages
-npm install
-
-# Verify installation
-npm list --depth=0
-```
-
-**Expected output should show:**
-- express
-- cors
-- dotenv
-- mysql2
-- nodemon
-
-### Step 6: Test Backend Connection
-
-```bash
-# Start backend server
 npm run dev
-
-# Expected output:
-# ✅ Database connection pool initialized successfully
-# 
-# ╔════════════════════════════════════════════════════════════╗
-# ║          🚀 Budget Tracker API Server Running 🚀           ║
-# ╚════════════════════════════════════════════════════════════╝
-# 📍 Server running on: http://localhost:4000
 ```
 
-**If you see errors:**
-1. Check MySQL is running
-2. Verify .env credentials
-3. Check port 4000 is available
-4. See Troubleshooting section below
+If the database connection works, the server should start and report the health endpoint at http://localhost:4000/health.
 
-**Leave the backend running and open a new terminal for the next step.**
+## 6. Start the frontend
 
-### Step 7: Install Frontend Dependencies
+Open a second terminal from the project root:
 
 ```bash
-# Navigate to project root (not backend folder)
-cd ..
-
-# Verify you're in the right folder
-ls          # Should see 'backend', 'src', 'angular.json'
-
-# Install npm packages
-npm install
-
-# This may take 2-3 minutes
-```
-
-**Expected: Should complete without errors.**
-
-### Step 8: Start Frontend Development Server
-
-```bash
-# In a new terminal, from project root
 npm run start
-
-# Expected output:
-# ✔ Compiled successfully.
-# ** Angular Live Development Server is listening on localhost:4200 **
-# ** open your browser on http://localhost:4200 **
 ```
 
-### Step 9: Access the Application
+The Angular app should be available at http://localhost:4200.
 
-1. **Open your browser**
-   - Go to: http://localhost:4200
-   
-2. **You should see:**
-   - Dashboard with charts
-   - Sidebar with navigation
-   - Navbar with title
+## 7. Verify the setup
 
-3. **If you see an error:**
-   - Check backend is still running
-   - Check browser console (F12) for errors
-   - See Troubleshooting section
+Check these in the browser or terminal:
 
-## ✅ Verification Checklist
+- http://localhost:4200
+- http://localhost:4000/health
+- http://localhost:4000/health/db
 
-After installation, verify everything works:
+If everything is working, you should see the app load and the API should return a healthy status for both the server and the database.
 
-```bash
-# Test 1: Backend Health
-curl http://localhost:4000/health
-# Should return: {"status":"healthy",...}
-
-# Test 2: Database Health
-curl http://localhost:4000/health/db
-# Should return: {"status":"healthy","database":"connected",...}
-
-# Test 3: API Endpoints
-curl http://localhost:4000/api/income
-# Should return: []
-
-# Test 4: Frontend Loads
-# Visit http://localhost:4200 in browser
 # Should display dashboard without errors
 ```
 

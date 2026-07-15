@@ -1,291 +1,95 @@
-# 💰 Budget Tracker
+# Budget Tracker
 
-A professional, full-stack budget tracking application built with **Angular 21**, **Express.js**, and **MySQL**. Manage your income, expenses, and budgets with beautiful visualizations and analytics.
+This project is a small budget tracker built with Angular on the frontend and a Node.js/Express API on the backend. It stores income, expenses, and budgets in MySQL and shows the main numbers in a simple dashboard.
 
-## 🎯 Features
+## What the app does
 
-- 📊 **Dashboard** - Overview of income, expenses, and balance
-- 💸 **Income Tracking** - Manage multiple income sources
-- 💳 **Expense Management** - Categorize and track expenses
-- 📈 **Budget Planning** - Create and monitor budgets
-- 📉 **Analytics** - Charts and statistics
-- 🏷️ **Categories** - Predefined categories for expenses
-- 🔍 **Filtering** - Filter by date range, category, and more
-- 💾 **MySQL Database** - Reliable data persistence
-- 🔐 **CORS Enabled** - Secure cross-origin requests
-- 📱 **Responsive UI** - Works on desktop and mobile
+- The dashboard gives a quick view of income, expenses, and balance.
+- The income page lets you add, edit, and remove income entries.
+- The expenses page does the same for spending.
+- The analytics page shows basic charts based on the stored data.
+- The backend exposes REST endpoints for the UI and for future integrations.
 
-## 🛠️ Tech Stack
+## Tech stack
 
-### Frontend
-- **Angular 21** - Modern frontend framework
-- **TypeScript** - Type-safe development
-- **RxJS** - Reactive programming
-- **Chart.js** - Data visualization
-- **Angular CDK** - Component Dev Kit
+- Frontend: Angular, TypeScript, RxJS, Chart.js
+- Backend: Node.js, Express, MySQL, mysql2
 
-### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **MySQL 8** - Relational database
-- **mysql2** - MySQL driver with promise support
+## Requirements
 
-## 📋 Prerequisites
+- Node.js 18 or newer
+- npm
+- MySQL 8 or a local MySQL-compatible server
 
-- **Node.js** v14.0.0 or higher
-- **npm** v6.0.0 or higher
-- **MySQL** v5.7 or higher (MariaDB 10.3+ compatible)
+## Run locally
 
-## 🚀 Quick Start
+### 1. Create the database
 
-### 1. Clone or Extract Project
+Run the schema file once against your local MySQL server:
 
 ```bash
-cd budget-tracker
-```
-
-### 2. Setup MySQL Database
-
-```bash
-# Option A: Using MySQL CLI
 mysql -u root -p < backend/sql/schema.sql
-
-# Option B: Using MySQL Workbench
-# Open backend/sql/schema.sql and execute
 ```
 
-### 3. Setup Backend
+### 2. Configure the backend
+
+Create a local environment file in the backend folder:
 
 ```bash
 cd backend
-npm install
 cp .env.example .env
-
-# Edit .env with your MySQL credentials
-# Then start the backend
-npm run dev
 ```
 
-Backend runs on: **http://localhost:4000**
+Then edit the file so it points to your local MySQL instance.
 
-### 4. Setup Frontend
+Example:
 
-```bash
-# From project root
-npm install
-npm run start
+```dotenv
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=budget_db
+DB_PORT=3306
+PORT=4000
 ```
 
-Frontend runs on: **http://localhost:4200**
+### 3. Start the backend
 
-### 5. Access the Application
-
-Open your browser to: **http://localhost:4200**
-
-## 📡 API Endpoints
-
-### Health Checks
-```
-GET /health              # Server status
-GET /health/db           # Database status
-```
-
-### Income API
-```
-GET    /api/income              # List income
-POST   /api/income              # Create income
-GET    /api/income/:id          # Get income
-PUT    /api/income/:id          # Update income
-DELETE /api/income/:id          # Delete income
-GET    /api/income/sources      # Income summary
-```
-
-### Expenses API
-```
-GET    /api/expenses            # List expenses
-POST   /api/expenses            # Create expense
-GET    /api/expenses/:id        # Get expense
-PUT    /api/expenses/:id        # Update expense
-DELETE /api/expenses/:id        # Delete expense
-GET    /api/expenses/categories # Expense summary
-```
-
-### Budgets API
-```
-GET    /api/budgets             # List budgets
-POST   /api/budgets             # Create budget
-GET    /api/budgets/:id         # Get budget
-PUT    /api/budgets/:id         # Update budget
-DELETE /api/budgets/:id         # Delete budget
-GET    /api/budgets/categories  # Budget categories
-```
-
-## 📁 Project Structure
-
-```
-budget-tracker/
-├── src/                    # Angular frontend
-│   ├── app/
-│   │   ├── core/          # Services, models, guards
-│   │   ├── features/      # Feature modules
-│   │   ├── shared/        # Shared components
-│   │   ├── layout/        # Navbar, sidebar, footer
-│   │   ├── app.routes.ts  # Routes
-│   │   └── app.config.ts  # Configuration
-│   ├── environments/      # Environment config
-│   └── styles/           # Styles
-│
-├── backend/               # Express API
-│   ├── server.js         # Main server
-│   ├── src/
-│   │   ├── db.js         # Database
-│   │   ├── controllers/  # Handlers
-│   │   └── routes/       # Routes
-│   ├── sql/schema.sql    # Database schema
-│   └── .env.example      # Environment template
-│
-├── angular.json
-├── tsconfig.json
-├── package.json
-└── proxy.conf.json
-```
-
-## 🔧 Development
-
-### Frontend + Backend (Full Stack)
-
-Terminal 1 - Backend:
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-Terminal 2 - Frontend:
+The API should be available at http://localhost:4000.
+
+### 4. Start the frontend
+
+In a second terminal from the project root:
+
 ```bash
 npm install
 npm run start
 ```
 
-Or run both together:
-```bash
-npm run dev
-```
+Open http://localhost:4200 in the browser.
 
-### Frontend Only
-```bash
-npm install
-npm run start
-```
+## Project layout
 
-### Build for Production
+- src/app contains the Angular UI
+- backend/src contains the Express routes and controllers
+- backend/sql/schema.sql contains the database schema
+
+## Useful commands
 
 ```bash
-# Build Angular
 npm run build
-
-# Start backend in production
-cd backend
-NODE_ENV=production npm start
+npm run dev
 ```
 
-## 🧪 Testing
+If you are changing the app, the main places to look are the Angular feature components under src/app and the API handlers under backend/src.
 
-```bash
-npm run test
-npm run lint
-```
-
-## 📊 Database Schema
-
-### Main Tables
-- **users** - User accounts
-- **budget_categories** - Expense categories
-- **budgets** - Budget records
-- **income** - Income transactions
-- **expenses** - Expense transactions
-- **transaction_history** - Audit trail
-
-### Features
-- Foreign key relationships
-- Performance indexes
-- Soft delete support
-- Timestamps on all records
-- Recurring transaction support
-
-## 🐛 Troubleshooting
-
-### Database Connection Failed
-1. Verify MySQL is running: `mysql -u root -p`
-2. Check `.env` credentials match your setup
-3. Verify database exists: `mysql -u root -p budget_db`
-
-### Port 4000 Already in Use (Backend)
-```powershell
-# Windows
-Get-Process -Id (Get-NetTCPConnection -LocalPort 4000).OwningProcess | Stop-Process
-
-# Linux/Mac
-lsof -ti:4000 | xargs kill -9
-```
-
-Change port in `backend/.env`: `PORT=5000`
-
-### Port 4200 Already in Use (Frontend)
-```bash
-npm run start -- --port 4300
-```
-
-### CORS Errors
-Update `backend/.env`:
-```
-CORS_ORIGIN=http://localhost:4200
-```
-
-## 📦 Key Dependencies
-
-**Frontend:**
-- `@angular/core` - Angular framework
-- `chart.js` & `ng2-charts` - Charting
-- `rxjs` - Reactive extensions
-
-**Backend:**
-- `express` - Web framework
-- `mysql2` - Database driver
-- `cors` - CORS middleware
-- `dotenv` - Config management
-
-## 🚢 Deployment
-
-### Traditional Hosting
-```bash
-npm install
-npm run build
-cd backend
-NODE_ENV=production npm start
-```
-
-### Docker
-```bash
-docker build -t budget-tracker .
-docker run -p 4000:4000 budget-tracker
-```
-
-## 📝 License
+## License
 
 MIT License
-
-## 🎉 Roadmap
-
-- [ ] User authentication
-- [ ] Multi-user support
-- [ ] Budget notifications
-- [ ] PDF/CSV export
-- [ ] Mobile app
-- [ ] Advanced analytics
-- [ ] Bank API integration
-
----
-
-**Start tracking your budget today! 💰**
 
