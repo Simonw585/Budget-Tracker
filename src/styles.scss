@@ -46,13 +46,6 @@ body {
   padding: 24px;
 }
 
-.layout-grid {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-}
-
 .page-content {
   display: flex;
   flex-direction: column;
@@ -157,6 +150,19 @@ body {
   gap: 8px;
 }
 
+.form-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+  font-weight: 600;
+}
+
 label {
   font-size: 0.9rem;
   font-weight: 600;
@@ -243,4 +249,5 @@ th {
     padding: 16px;
   }
 }
+
 

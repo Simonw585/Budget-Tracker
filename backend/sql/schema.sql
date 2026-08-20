@@ -46,10 +46,28 @@ CREATE TABLE IF NOT EXISTS budgets (
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Normalised category tables
+CREATE TABLE IF NOT EXISTS income_categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS expense_categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Income table
 CREATE TABLE IF NOT EXISTS income (
   id INT AUTO_INCREMENT PRIMARY KEY,
   source VARCHAR(255) NOT NULL,
+  category_id INT NULL,
   amount DECIMAL(15,2) NOT NULL,
   date DATE NOT NULL,
   description TEXT,
@@ -58,8 +76,10 @@ CREATE TABLE IF NOT EXISTS income (
   user_id INT DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES income_categories(id) ON DELETE SET NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_user_id (user_id),
+  INDEX idx_category_id (category_id),
   INDEX idx_date (date),
   INDEX idx_created_at (created_at),
   INDEX idx_source (source)
@@ -69,6 +89,7 @@ CREATE TABLE IF NOT EXISTS income (
 CREATE TABLE IF NOT EXISTS expenses (
   id INT AUTO_INCREMENT PRIMARY KEY,
   category VARCHAR(255) NOT NULL,
+  category_id INT NULL,
   description TEXT NOT NULL,
   amount DECIMAL(15,2) NOT NULL,
   date DATE NOT NULL,
@@ -79,10 +100,12 @@ CREATE TABLE IF NOT EXISTS expenses (
   user_id INT DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES expense_categories(id) ON DELETE SET NULL,
   FOREIGN KEY (budget_id) REFERENCES budgets(id) ON DELETE SET NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_user_id (user_id),
   INDEX idx_category (category),
+  INDEX idx_category_id (category_id),
   INDEX idx_date (date),
   INDEX idx_budget_id (budget_id),
   INDEX idx_created_at (created_at)
@@ -115,6 +138,22 @@ INSERT IGNORE INTO budget_categories (name, description) VALUES
   ('Utilities', 'Electricity, water, and internet bills'),
   ('Housing', 'Rent, mortgage, and home maintenance'),
   ('Education', 'Tuition, books, and courses'),
+  ('Other', 'Miscellaneous expenses');
+
+INSERT IGNORE INTO income_categories (name, description) VALUES
+  ('Salary', 'Primary employment income'),
+  ('Freelance', 'Contract or freelance income'),
+  ('Bonus', 'One-off bonus or commission'),
+  ('Investments', 'Dividend or investment income'),
+  ('Other', 'Other income sources');
+
+INSERT IGNORE INTO expense_categories (name, description) VALUES
+  ('Groceries', 'Food and household essentials'),
+  ('Housing', 'Rent, mortgage, and utilities'),
+  ('Transport', 'Fuel, transit, and travel'),
+  ('Entertainment', 'Leisure and leisure subscriptions'),
+  ('Health', 'Medical and healthcare costs'),
+  ('Shopping', 'Clothing and general purchases'),
   ('Other', 'Miscellaneous expenses');
 
 

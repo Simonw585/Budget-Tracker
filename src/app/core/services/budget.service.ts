@@ -54,17 +54,45 @@ export class BudgetService {
     this.loadExpenses();
   }
 
+  private normalizeDateValue(dateValue: string | Date | null | undefined): string {
+    if (!dateValue) {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    const raw = String(dateValue).trim();
+    if (!raw) {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    const exactMatch = raw.match(/^(\d{4}-\d{2}-\d{2})$/);
+    if (exactMatch) {
+      return exactMatch[1];
+    }
+
+    const isoMatch = raw.match(/(\d{4}-\d{2}-\d{2})/);
+    if (isoMatch) {
+      return isoMatch[1];
+    }
+
+    const parsed = new Date(raw);
+    if (!Number.isNaN(parsed.getTime())) {
+      return new Date(parsed.getTime() - (parsed.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+    }
+
+    return new Date().toISOString().slice(0, 10);
+  }
+
   private loadIncome() {
     this.http.get<any[]>(`${environment.apiUrl}/income`).subscribe({
       next: (rows) => {
         const mapped: Transaction[] = (rows || []).map((r) => ({
           id: `income-${r.id}`,
           type: 'income',
-          category: r.source || 'Income',
+          category: r.category_name || r.category || r.source || 'Income',
           source: r.source || '',
           amount: Number(r.amount) || 0,
-          date: r.date || new Date().toISOString().slice(0, 10),
-          notes: ''
+          date: this.normalizeDateValue(r.date),
+          notes: r.notes || ''
         }));
         this.incomesSignal.set(mapped);
       },
@@ -80,11 +108,11 @@ export class BudgetService {
         const mapped: Transaction[] = (rows || []).map((r) => ({
           id: `expense-${r.id}`,
           type: 'expense',
-          category: r.category || 'Expense',
+          category: r.category_name || r.category || 'Expense',
           source: r.description || '',
           amount: Number(r.amount) || 0,
-          date: r.date || new Date().toISOString().slice(0, 10),
-          notes: r.description || ''
+          date: this.normalizeDateValue(r.date),
+          notes: r.notes || ''
         }));
         this.expensesSignal.set(mapped);
       },
@@ -96,7 +124,13 @@ export class BudgetService {
 
   addTransaction(transaction: Transaction) {
     if (transaction.type === 'income') {
-      const body = { source: transaction.source, amount: transaction.amount, date: transaction.date };
+      const body = {
+        source: transaction.source.trim(),
+        category: transaction.category.trim(),
+        amount: Number(transaction.amount),
+        date: this.normalizeDateValue(transaction.date),
+        notes: transaction.notes?.trim() || ''
+      };
       this.http.post<any>(`${environment.apiUrl}/income`, body).subscribe({
         next: (res) => {
           const id = `income-${res.id}`;
@@ -105,7 +139,13 @@ export class BudgetService {
         error: (err) => console.error('Failed to add income', err)
       });
     } else {
-      const body = { category: transaction.category, description: transaction.source, amount: transaction.amount, date: transaction.date };
+      const body = {
+        category: transaction.category.trim(),
+        description: transaction.source.trim(),
+        amount: Number(transaction.amount),
+        date: this.normalizeDateValue(transaction.date),
+        notes: transaction.notes?.trim() || ''
+      };
       this.http.post<any>(`${environment.apiUrl}/expenses`, body).subscribe({
         next: (res) => {
           const id = `expense-${res.id}`;
@@ -121,13 +161,25 @@ export class BudgetService {
     const type = parts[0];
     const id = parts.slice(1).join('-');
     if (type === 'income') {
-      const body = { source: transaction.source, amount: transaction.amount, date: transaction.date };
+      const body = {
+        source: transaction.source.trim(),
+        category: transaction.category.trim(),
+        amount: Number(transaction.amount),
+        date: this.normalizeDateValue(transaction.date),
+        notes: transaction.notes?.trim() || ''
+      };
       this.http.put(`${environment.apiUrl}/income/${id}`, body).subscribe({
         next: () => this.incomesSignal.update((cur) => cur.map((t) => (t.id === transaction.id ? transaction : t))),
         error: (err) => console.error('Failed to update income', err)
       });
     } else {
-      const body = { category: transaction.category, description: transaction.source, amount: transaction.amount, date: transaction.date };
+      const body = {
+        category: transaction.category.trim(),
+        description: transaction.source.trim(),
+        amount: Number(transaction.amount),
+        date: this.normalizeDateValue(transaction.date),
+        notes: transaction.notes?.trim() || ''
+      };
       this.http.put(`${environment.apiUrl}/expenses/${id}`, body).subscribe({
         next: () => this.expensesSignal.update((cur) => cur.map((t) => (t.id === transaction.id ? transaction : t))),
         error: (err) => console.error('Failed to update expense', err)

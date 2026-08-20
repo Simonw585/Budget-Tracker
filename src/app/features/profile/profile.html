@@ -1,0 +1,126 @@
+<section class="feature-page">
+  <div class="profile-header glass-card">
+    <div class="profile-banner">
+      <div class="avatar">{{ initials }}</div>
+      <div>
+        <p class="eyebrow">Account overview</p>
+        <h2>{{ fullName }}</h2>
+        <p class="subtitle">{{ profile.role }}</p>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button type="button" class="secondary-button" (click)="toggleEdit()">
+        {{ isEditing ? 'Cancel' : 'Edit profile' }}
+      </button>
+      <button *ngIf="isEditing" type="button" (click)="saveProfile()">Save changes</button>
+    </div>
+  </div>
+
+  <div *ngIf="savedMessage" class="save-message">{{ savedMessage }}</div>
+
+  <div class="profile-layout">
+    <div class="glass-card profile-summary">
+      <h3>Profile details</h3>
+      <div class="detail-list">
+        <div>
+          <span>Email</span>
+          <strong>{{ profile.email }}</strong>
+        </div>
+        <div>
+          <span>Phone</span>
+          <strong>{{ profile.phone }}</strong>
+        </div>
+        <div>
+          <span>Location</span>
+          <strong>{{ profile.location }}</strong>
+        </div>
+        <div>
+          <span>Currency</span>
+          <strong>{{ profile.currency }}</strong>
+        </div>
+        <div>
+          <span>Monthly target</span>
+          <strong>{{ profile.monthlyTarget | currency:'GBP':'symbol':'1.0-0':'en-GB' }}</strong>
+        </div>
+        <div>
+          <span>Theme</span>
+          <strong>{{ profile.theme }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <form class="glass-card profile-form" (ngSubmit)="saveProfile()" *ngIf="isEditing; else profileReadOnly">
+      <h3>Edit profile</h3>
+
+      <div class="field-row two-up">
+        <div class="field-group">
+          <label for="firstName">First name</label>
+          <input id="firstName" name="firstName" [(ngModel)]="profile.firstName" type="text" />
+        </div>
+        <div class="field-group">
+          <label for="lastName">Last name</label>
+          <input id="lastName" name="lastName" [(ngModel)]="profile.lastName" type="text" />
+        </div>
+      </div>
+
+      <div class="field-row two-up">
+        <div class="field-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" [(ngModel)]="profile.email" type="email" />
+        </div>
+        <div class="field-group">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" [(ngModel)]="profile.phone" type="tel" />
+        </div>
+      </div>
+
+      <div class="field-row two-up">
+        <div class="field-group">
+          <label for="location">Location</label>
+          <input id="location" name="location" [(ngModel)]="profile.location" type="text" />
+        </div>
+        <div class="field-group">
+          <label for="role">Role</label>
+          <input id="role" name="role" [(ngModel)]="profile.role" type="text" />
+        </div>
+      </div>
+
+      <div class="field-row two-up">
+        <div class="field-group">
+          <label for="currency">Currency</label>
+          <select id="currency" name="currency" [(ngModel)]="profile.currency">
+            <option value="GBP">GBP</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="theme">Theme</label>
+          <select id="theme" name="theme" [(ngModel)]="profile.theme">
+            <option value="Dark mode">Dark mode</option>
+            <option value="Light mode">Light mode</option>
+            <option value="System default">System default</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="monthlyTarget">Monthly target</label>
+        <input id="monthlyTarget" name="monthlyTarget" [(ngModel)]="profile.monthlyTarget" type="number" min="0" />
+      </div>
+
+      <div class="field-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="4" [(ngModel)]="profile.bio"></textarea>
+      </div>
+    </form>
+
+    <ng-template #profileReadOnly>
+      <div class="glass-card profile-form">
+        <h3>About</h3>
+        <p>{{ profile.bio }}</p>
+      </div>
+    </ng-template>
+  </div>
+</section>

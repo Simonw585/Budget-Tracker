@@ -1,0 +1,154 @@
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.profile-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+
+.profile-header h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 2vw, 2.5rem);
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: white;
+  font-weight: 800;
+  font-size: 1.25rem;
+  box-shadow: 0 14px 30px rgba(56, 189, 248, 0.3);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  background: rgba(148, 163, 184, 0.12);
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: none;
+}
+
+.save-message {
+  background: rgba(34, 197, 94, 0.12);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.6fr);
+  gap: 24px;
+}
+
+.profile-summary h3,
+.profile-form h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.detail-list {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-list div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.detail-list span {
+  color: #93c5fd;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detail-list strong {
+  font-size: 1rem;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field-row {
+  display: grid;
+  gap: 18px;
+}
+
+.two-up {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-group label {
+  color: #bfdbfe;
+  font-weight: 600;
+}
+
+textarea,
+select {
+  border: 1px solid rgba(191, 219, 254, 0.24);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  background: rgba(15, 23, 42, 0.5);
+  color: #f8fafc;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+@media (max-width: 900px) {
+  .profile-header,
+  .profile-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-layout,
+  .two-up {
+    grid-template-columns: 1fr;
+  }
+}

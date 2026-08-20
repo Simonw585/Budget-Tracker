@@ -7,8 +7,9 @@ const { pool } = require('./src/db');
 const app = express();
 
 // ============================================================================
-// MIDDLEWARE
+// GLOBAL MIDDLEWARE
 // ============================================================================
+// Handles JSON parsing, CORS, logging, and shared request processing for all API calls.
 
 // CORS configuration
 const corsOptions = {
@@ -31,8 +32,9 @@ app.use((req, res, next) => {
 });
 
 // ============================================================================
-// HEALTH CHECK & DATABASE
+// HEALTH CHECKS
 // ============================================================================
+// Simple server status checks and database connectivity checks for local debugging.
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -66,8 +68,7 @@ app.get('/health/db', (req, res) => {
 // ============================================================================
 // API ROUTES
 // ============================================================================
-
-// Mount API routes
+// Main application endpoints: income, expenses, and budgets, each mapped to a controller.
 app.use('/api/income', require('./src/routes/income'));
 app.use('/api/expenses', require('./src/routes/expenses'));
 app.use('/api/budgets', require('./src/routes/budgets'));

@@ -80,6 +80,17 @@ Open http://localhost:4200 in the browser.
 - backend/src contains the Express routes and controllers
 - backend/sql/schema.sql contains the database schema
 
+## Parts of the project at a glance
+
+- Frontend (src): the user interface, pages, and shared logic used by the browser.
+- Dashboard: shows total income, total expenses, and overall balance at a glance.
+- Income page: lets users add, edit, and remove income entries.
+- Expenses page: lets users add, edit, and remove expense entries.
+- Analytics page: displays charts and category summaries from the saved data.
+- Backend API (backend): handles requests from the frontend and talks to MySQL.
+- Database schema (backend/sql/schema.sql): defines the tables and relationships for budgets and transactions.
+- Services and models: shared logic that maps API data into Angular-friendly objects.
+
 ## Useful commands
 
 ```bash

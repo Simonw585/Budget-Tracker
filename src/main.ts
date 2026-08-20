@@ -3,22 +3,19 @@ import { Component, importProvidersFrom } from '@angular/core';
 import { RouterOutlet, provideRouter } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './app/layout/navbar/navbar';
-import { SidebarComponent } from './app/layout/sidebar/sidebar';
 import { appRoutes } from './app/app.routes';
 
+// App entry point: boots the Angular shell and sets up routing + HTTP access.
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NavbarComponent, SidebarComponent, RouterOutlet],
+  imports: [NavbarComponent, RouterOutlet],
   template: `
     <div class="app-shell">
       <app-navbar></app-navbar>
-      <div class="layout-grid">
-        <app-sidebar></app-sidebar>
-        <main class="page-content">
-          <router-outlet></router-outlet>
-        </main>
-      </div>
+      <main class="page-content">
+        <router-outlet></router-outlet>
+      </main>
     </div>
   `,
   styleUrls: ['./styles.scss']

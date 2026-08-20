@@ -1,16 +1,51 @@
 const { poolPromise } = require('../db');
 
-// Helper function for validation
+const getNumericAmount = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const resolveCategoryId = async (categoryName) => {
+  if (!categoryName || typeof categoryName !== 'string') {
+    return null;
+  }
+
+  const trimmed = categoryName.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const [[existing]] = await poolPromise.query(
+    'SELECT id FROM income_categories WHERE name = ? LIMIT 1',
+    [trimmed]
+  );
+
+  if (existing) {
+    return existing.id;
+  }
+
+  const [result] = await poolPromise.query(
+    'INSERT INTO income_categories (name) VALUES (?)',
+    [trimmed]
+  );
+
+  return result.insertId;
+};
+
 const validateIncome = (body) => {
   const errors = [];
   if (!body.source || typeof body.source !== 'string' || body.source.trim() === '') {
     errors.push('Source is required and must be a non-empty string');
   }
-  if (body.amount === undefined || typeof body.amount !== 'number' || body.amount <= 0) {
+  const parsedAmount = getNumericAmount(body.amount);
+  if (parsedAmount === null || parsedAmount <= 0) {
     errors.push('Amount is required and must be a positive number');
   }
   if (!body.date || !/^\d{4}-\d{2}-\d{2}$/.test(body.date)) {
     errors.push('Date is required and must be in YYYY-MM-DD format');
+  }
+  if (!body.category && body.category_id === undefined) {
+    errors.push('Category is required');
   }
   return errors;
 };
@@ -18,23 +53,27 @@ const validateIncome = (body) => {
 exports.list = async (req, res) => {
   try {
     const { startDate, endDate, source } = req.query;
-    let query = 'SELECT * FROM income WHERE 1=1';
+    let query = `
+      SELECT i.id, i.source, DATE_FORMAT(i.date, '%Y-%m-%d') AS date, i.category_id, i.amount, i.description, i.notes, i.is_recurring, i.user_id, i.created_at, i.updated_at, ic.name AS category_name
+      FROM income i
+      LEFT JOIN income_categories ic ON ic.id = i.category_id
+      WHERE 1=1`;
     const params = [];
 
     if (startDate) {
-      query += ' AND date >= ?';
+      query += ' AND i.date >= ?';
       params.push(startDate);
     }
     if (endDate) {
-      query += ' AND date <= ?';
+      query += ' AND i.date <= ?';
       params.push(endDate);
     }
     if (source) {
-      query += ' AND source = ?';
+      query += ' AND i.source = ?';
       params.push(source);
     }
 
-    query += ' ORDER BY date DESC, created_at DESC';
+    query += ' ORDER BY i.date DESC, i.created_at DESC';
 
     const [rows] = await poolPromise.query(query, params);
     res.json(rows || []);
@@ -72,13 +111,17 @@ exports.create = async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    const { source, amount, date, description = null, notes = null, is_recurring = false } = req.body;
-    
+    const { source, amount, date, description = null, notes = null, category = null, category_id = null, is_recurring = false } = req.body;
+    const parsedAmount = getNumericAmount(amount);
+    const resolvedCategoryId = category_id !== null && category_id !== undefined && category_id !== ''
+      ? Number(category_id)
+      : await resolveCategoryId(category);
+
     const [result] = await poolPromise.query(
-      'INSERT INTO income (source, amount, date, description, notes, is_recurring) VALUES (?, ?, ?, ?, ?, ?)',
-      [source.trim(), amount, date, description, notes, is_recurring]
+      'INSERT INTO income (source, category_id, amount, date, description, notes, is_recurring) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [source.trim(), resolvedCategoryId, parsedAmount, date, description, notes, is_recurring]
     );
-    
+
     res.status(201).json({
       id: result.insertId,
       message: 'Income created successfully'
@@ -101,17 +144,21 @@ exports.update = async (req, res) => {
       return res.status(400).json({ errors });
     }
 
-    const { source, amount, date, description, notes, is_recurring } = req.body;
-    
+    const { source, amount, date, description, notes, category = null, category_id = null, is_recurring } = req.body;
+    const parsedAmount = getNumericAmount(amount);
+    const resolvedCategoryId = category_id !== null && category_id !== undefined && category_id !== ''
+      ? Number(category_id)
+      : await resolveCategoryId(category);
+
     const [result] = await poolPromise.query(
-      'UPDATE income SET source=?, amount=?, date=?, description=?, notes=?, is_recurring=? WHERE id=?',
-      [source.trim(), amount, date, description, notes, is_recurring !== undefined ? is_recurring : false, id]
+      'UPDATE income SET source=?, category_id=?, amount=?, date=?, description=?, notes=?, is_recurring=? WHERE id=?',
+      [source.trim(), resolvedCategoryId, parsedAmount, date, description, notes, is_recurring !== undefined ? is_recurring : false, id]
     );
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Income not found' });
     }
-    
+
     res.json({ updated: true, message: 'Income updated successfully' });
   } catch (err) {
     console.error('❌ Error updating income:', err);
