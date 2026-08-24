@@ -1,3 +1,5 @@
+// Brief: ExpensesComponent — handles listing, adding, editing, and deleting expenses.
+// What it does: manages expense form state, validation, and delegates persistence to BudgetService.
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

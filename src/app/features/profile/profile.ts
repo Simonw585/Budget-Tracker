@@ -1,3 +1,5 @@
+// Brief: ProfileComponent — manages user profile data and editing UI.
+// What it does: stores profile state, toggles edit mode, validates and saves changes.
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

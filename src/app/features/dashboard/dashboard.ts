@@ -1,3 +1,5 @@
+// Brief: DashboardComponent — presents aggregated budget metrics.
+// What it does: reads computed values from BudgetService (income, expenses, balance, trends).
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BudgetService } from '../../core/services/budget.service';

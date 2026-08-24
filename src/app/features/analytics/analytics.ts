@@ -1,3 +1,5 @@
+// Brief: AnalyticsComponent — prepares chart data and options for visual reports.
+// What it does: computes datasets from BudgetService and configures chart.js options.
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';

@@ -1,3 +1,5 @@
+// Brief: IncomeComponent — handles listing, adding, editing, and deleting income entries.
+// What it does: manages income form state, validation, and delegates persistence to BudgetService.
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
